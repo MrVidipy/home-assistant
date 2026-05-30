@@ -63,21 +63,14 @@ class BluetoothConnection(ClientApiConnection):
         self._force_read_event = asyncio.Event()
 
     async def _connect(self) -> None:
-        if self._ble_device is not None:
-            self._bleak_client = await establish_connection(
-                client_class=BleakClient,
-                device=self._ble_device,
-                name=self._ble_address,
-                max_attempts=3,
-                timeout=self._connect_timeout,
-                backend=self._bleak_client_backend,
-            )
-        else:
-            self._bleak_client = BleakClient(
-                self._ble_address, timeout=self._connect_timeout, backend=self._bleak_client_backend
-            )
-            await self._bleak_client.establish_connection()
-
+        self._bleak_client = await establish_connection(
+            client_class=BleakClient,
+            device=self._ble_device,
+            name=self._ble_address,
+            max_attempts=3,
+            timeout=self._connect_timeout,
+            backend=self._bleak_client_backend,
+        )
         self._ble_meshtastic_service = self._bleak_client.services[BluetoothConnection.BTM_SERVICE_UUID]
 
         if self._ble_meshtastic_service is None:
