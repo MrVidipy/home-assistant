@@ -76,7 +76,7 @@ class BluetoothConnection(ClientApiConnection):
             self._bleak_client = BleakClient(
                 self._ble_address, timeout=self._connect_timeout, backend=self._bleak_client_backend
             )
-            await self._bleak_client.connect()
+            await self._bleak_client.establish_connection()
 
         self._ble_meshtastic_service = self._bleak_client.services[BluetoothConnection.BTM_SERVICE_UUID]
 
