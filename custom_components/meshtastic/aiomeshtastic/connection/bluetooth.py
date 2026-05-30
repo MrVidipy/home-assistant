@@ -69,21 +69,14 @@ class BluetoothConnection(ClientApiConnection):
                 device=self._ble_device,
                 name=self._ble_address,
                 max_attempts=3,
+                timeout=self._connect_timeout,
+                backend=self._bleak_client_backend,
             )
         else:
             self._bleak_client = BleakClient(
                 self._ble_address, timeout=self._connect_timeout, backend=self._bleak_client_backend
             )
             await self._bleak_client.connect()
-
-        # attempt pairing, we don't know if it is required. Should not harm if
-        # not needed. if pairing is required, external input is necessary as we are not
-        # able to fully pair with bleak see https://github.com/hbldh/bleak/issues/1434.
-        # possible workaround: https://technotes.kynetics.com/2018/pairing_agents_bluez/
-        try:
-            await self._bleak_client.pair()
-        except:  # noqa: E722
-            self._logger.debug("Pairing failed", exc_info=True)
 
         self._ble_meshtastic_service = self._bleak_client.services[BluetoothConnection.BTM_SERVICE_UUID]
 
